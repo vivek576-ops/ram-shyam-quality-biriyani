@@ -39,7 +39,7 @@ export const APP_CONFIG = {
   },
 
   // API Base URL
-  apiBaseUrl: import.meta.env.VITE_API_URL || 'http://localhost:5000',
+  apiBaseUrl: import.meta.env.VITE_API_URL || 'https://ram-shyam-quality-biriyani.onrender.com',
 };
 
 export default APP_CONFIG;
