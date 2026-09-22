@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F9D423" />
+      <stop offset="50%" stop-color="#FF4E50" />
+      <stop offset="100%" stop-color="#D4AF37" />
+    </linearGradient>
+  </defs>
+  <circle cx="50" cy="50" r="48" fill="#121214" stroke="url(#goldGrad)" stroke-width="4"/>
+  <!-- Handi / Pot Outline -->
+  <path d="M25 45 C25 35, 75 35, 75 45 C75 75, 65 80, 50 80 C35 80, 25 75, 25 45 Z" fill="#D4AF37" opacity="0.9"/>
+  <!-- Steam Curves -->
+  <path d="M40 32 C38 25, 44 20, 42 14" stroke="#F9D423" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M50 30 C48 22, 54 18, 52 10" stroke="#F9D423" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <path d="M60 32 C58 25, 64 20, 62 14" stroke="#F9D423" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <text x="50" y="65" font-family="'Cinzel', serif" font-weight="900" font-size="20" fill="#121214" text-anchor="middle">RS</text>
+</svg>
