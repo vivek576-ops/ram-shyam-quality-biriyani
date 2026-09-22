@@ -19,8 +19,7 @@ const Home = () => {
       role: 'Regular Customer (Ambajipeta)',
       rating: 5,
       comment: 'The Chicken Fry Piece Biryani is hands down the best in the Ambajipeta - Irusumanda area! The crispy spiced chicken with the aromatic basmati rice is top notch. Pre-booking saves waiting time at the counter.',
-      dish: 'Chicken Fry Piece Biryani (Full)',
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'
+      dish: 'Chicken Fry Piece Biryani (Full)'
     },
     {
       id: 2,
@@ -28,8 +27,7 @@ const Home = () => {
       role: 'Regular Customer (Irusumanda)',
       rating: 5,
       comment: 'Their pure Veg Meals and hot Sambar & Dal parcels are fresh and comforting. Quality rice, authentic flavor, and quick service.',
-      dish: 'South Indian Veg Meals',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80'
+      dish: 'South Indian Veg Meals'
     },
     {
       id: 3,
@@ -37,8 +35,7 @@ const Home = () => {
       role: 'Family Regular',
       rating: 5,
       comment: 'Their daily fresh Veg Curries like Gutti Vankaya and Paneer with hot rice are unbeatable. Everything is packed piping hot in clean sealed containers.',
-      dish: 'Daily Fresh Veg Curries',
-      avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80'
+      dish: 'Daily Fresh Veg Curries'
     }
   ];
 
@@ -69,7 +66,7 @@ const Home = () => {
             </p>
 
             <p className="hero-desc animate-slide-up delay-2">
-              Serving our famous <strong>Chicken Fry Piece Biryani</strong> (Single ₹120, Full ₹220, Family Pack ₹350), traditional <strong>Veg Meals (₹60) & Veg Biryani (₹60)</strong>, and fresh <strong>Curries (Sambar ₹20, Dal ₹20 & Daily Veg Curries)</strong>. Pre-book your hot parcel online and collect fresh at our hotel!
+              Serving our famous <strong>Chicken Fry Piece Biryani</strong> (Single ₹120, Full ₹200, Family Pack ₹350), traditional <strong>Veg Meals (₹60) & Veg Biryani (₹60)</strong>, and fresh <strong>Curries (Sambar ₹20, Dal ₹20 & Daily Veg Curries)</strong>. Pre-book your hot parcel online and collect fresh at our hotel!
             </p>
 
             {/* CTAs */}
@@ -93,7 +90,7 @@ const Home = () => {
             {/* Live Stats */}
             <div className="hero-stats-row animate-fade-in delay-4">
               <div className="stat-item">
-                <span className="stat-number">₹120 / ₹220 / ₹350</span>
+                <span className="stat-number">₹120 / ₹200 / ₹350</span>
                 <span className="stat-label">Chicken Fry Piece Biryani</span>
               </div>
               <div className="stat-divider"></div>
@@ -126,7 +123,7 @@ const Home = () => {
                 <Flame size={20} className="text-gold" />
                 <div>
                   <div className="card-mini-title">Chicken Fry Piece Biryani</div>
-                  <div className="card-mini-sub">Single (₹120) • Full (₹220) • Family (₹350)</div>
+                  <div className="card-mini-sub">Single (₹120) • Full (₹200) • Family (₹350)</div>
                 </div>
               </div>
 
@@ -210,7 +207,7 @@ const Home = () => {
                     </div>
                     <div className="size-price-card size-card-featured">
                       <span className="s-name">Full Portion</span>
-                      <strong className="s-price text-gold">₹220</strong>
+                      <strong className="s-price text-gold">₹200</strong>
                       <span className="s-serves">Serves 1-2 • Generous Pcs</span>
                     </div>
                     <div className="size-price-card">
@@ -299,7 +296,6 @@ const Home = () => {
                 </div>
                 <p className="t-comment">"{t.comment}"</p>
                 <div className="t-user">
-                  <img src={t.avatar} alt={t.name} className="t-avatar" />
                   <div>
                     <strong className="t-name">{t.name}</strong>
                     <span className="t-role">{t.role}</span>

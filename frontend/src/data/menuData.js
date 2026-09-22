@@ -28,7 +28,7 @@ export const MENU_ITEMS = [
     id: 'bir-cf-full',
     name: 'Chicken Fry Piece Biryani (Full)',
     category: 'Non-Veg',
-    price: 220,
+    price: 200,
     description: 'Hearty full portion of basmati biryani layered with generous crispy chicken fry pieces, rich gravy & raita.',
     detailedDescription: 'Our hallmark full specialty: Generous portion of fragrant basmati biryani loaded with crispy golden fried chicken pieces, caramelized onions, boiled egg, mirchi ka salan, and cool raita.',
     image: '/images/chicken_fry_biryani.jpg',
