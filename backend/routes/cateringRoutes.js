@@ -3,11 +3,25 @@ const express = require('express');
 const router = express.Router();
 
 const {
-  createCateringRequest
+  createCateringRequest,
+  getCateringRequests,
+  updateCateringRequestStatus
 } = require('../controllers/cateringController');
 
-router
-  .route('/')
-  .post(createCateringRequest);
+const verifyAdminPin = require('../middleware/adminAuth');
+
+router.post('/', createCateringRequest);
+
+router.get(
+  '/',
+  verifyAdminPin,
+  getCateringRequests
+);
+
+router.patch(
+  '/:id/status',
+  verifyAdminPin,
+  updateCateringRequestStatus
+);
 
 module.exports = router;

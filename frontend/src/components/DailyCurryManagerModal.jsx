@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Lock, Plus, Check, Sparkles, RefreshCw, Eye, EyeOff } from 'lucide-react';
+import { X, Lock, Plus, Check, Sparkles, RefreshCw, Eye, EyeOff, Phone, MessageCircle, CalendarDays, Users, MapPin, Mail } from 'lucide-react';
 import { APP_CONFIG } from '../config';
 import { CURRY_PRESET_IMAGES } from '../utils/imageHelper';
 
@@ -23,7 +23,132 @@ const DailyCurryManagerModal = ({ isOpen, onClose, dailyCurries, onCurriesUpdate
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState('');
 
+  // Catering enquiry management
+  const [cateringRequests, setCateringRequests] = useState([]);
+  const [cateringLoading, setCateringLoading] = useState(false);
+  const [cateringError, setCateringError] = useState('');
+  const [updatingCateringId, setUpdatingCateringId] = useState('');
+
   if (!isOpen) return null;
+
+  const fetchCateringRequests = async () => {
+    if (!pin) return;
+
+    setCateringLoading(true);
+    setCateringError('');
+
+    try {
+      const res = await fetch(
+        `${APP_CONFIG.apiBaseUrl}/api/catering`,
+        {
+          method: 'GET',
+          headers: {
+            'x-admin-pin': pin
+          }
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        setCateringError(
+          data.message || 'Unable to load catering enquiries.'
+        );
+        return;
+      }
+
+      setCateringRequests(data.data || []);
+    } catch (error) {
+      console.error('Catering enquiries fetch error:', error);
+      setCateringError(
+        'Unable to load catering enquiries. Please check your server connection.'
+      );
+    } finally {
+      setCateringLoading(false);
+    }
+  };
+
+  const handleCateringStatusChange = async (requestId, status) => {
+    setUpdatingCateringId(requestId);
+    setCateringError('');
+
+    try {
+      const res = await fetch(
+        `${APP_CONFIG.apiBaseUrl}/api/catering/${requestId}/status`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-admin-pin': pin
+          },
+          body: JSON.stringify({ status })
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        setCateringError(
+          data.message || 'Unable to update catering enquiry status.'
+        );
+        return;
+      }
+
+      setCateringRequests((prev) =>
+        prev.map((request) =>
+          request._id === requestId
+            ? { ...request, status: data.data?.status || status }
+            : request
+        )
+      );
+
+      setStatusMessage(
+        data.message || 'Catering enquiry status updated successfully.'
+      );
+    } catch (error) {
+      console.error('Catering status update error:', error);
+      setCateringError(
+        'Unable to update catering enquiry status.'
+      );
+    } finally {
+      setUpdatingCateringId('');
+    }
+  };
+
+  const formatCateringDate = (dateValue) => {
+    if (!dateValue) return '—';
+
+    const date = new Date(dateValue);
+
+    if (Number.isNaN(date.getTime())) {
+      return dateValue;
+    }
+
+    return date.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
+
+  const buildCustomerWhatsAppUrl = (phone, request) => {
+    const cleanedPhone = String(phone || '').replace(/\D/g, '');
+
+    if (!cleanedPhone) return '#';
+
+    const message = [
+      'Hello, this is RAM & SHYAM QUALITY BIRIYANI regarding your catering enquiry.',
+      '',
+      `Event: ${request.eventType}`,
+      `Date: ${formatCateringDate(request.eventDate)}`,
+      `Guests: ${request.guestCount}`,
+      `Venue: ${request.venue}`,
+      '',
+      'We would like to discuss your catering requirements and quotation.'
+    ].join('\n');
+
+    return `https://wa.me/${cleanedPhone}?text=${encodeURIComponent(message)}`;
+  };
 
   const handleVerifyPin = async (e) => {
   e.preventDefault();
@@ -50,6 +175,9 @@ const DailyCurryManagerModal = ({ isOpen, onClose, dailyCurries, onCurriesUpdate
 
     setIsAuthenticated(true);
     setAuthError('');
+
+    // Load catering enquiries after owner authentication.
+    await fetchCateringRequests();
   } catch (error) {
     console.error('PIN verification error:', error);
     setAuthError('Unable to connect to the server.');
@@ -570,6 +698,306 @@ const DailyCurryManagerModal = ({ isOpen, onClose, dailyCurries, onCurriesUpdate
                   <p className="text-muted text-sm">No daily curries uploaded yet.</p>
                 )}
               </div>
+            </div>
+
+            {/* 3. Catering Enquiries */}
+            <div
+              className="active-curries-list-section"
+              style={{
+                marginTop: '1.5rem',
+                borderTop: '1px solid var(--border-subtle)',
+                paddingTop: '1.5rem'
+              }}
+            >
+              <div className="list-header-row">
+                <div>
+                  <h4>
+                    Catering Enquiries ({cateringRequests.length})
+                  </h4>
+                  <p className="text-muted text-xs" style={{ marginTop: '0.25rem' }}>
+                    Customer catering enquiries submitted from the website.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={fetchCateringRequests}
+                  className="refresh-btn text-gold text-sm flex-center"
+                  disabled={cateringLoading}
+                >
+                  <RefreshCw
+                    size={14}
+                    className="mr-1"
+                    style={{
+                      animation: cateringLoading
+                        ? 'spin 1s linear infinite'
+                        : 'none'
+                    }}
+                  />
+                  {cateringLoading ? 'Loading...' : 'Refresh'}
+                </button>
+              </div>
+
+              {cateringError && (
+                <div
+                  className="error-message"
+                  style={{
+                    marginTop: '0.8rem',
+                    marginBottom: '0.8rem'
+                  }}
+                >
+                  {cateringError}
+                </div>
+              )}
+
+              {cateringLoading && cateringRequests.length === 0 ? (
+                <div
+                  className="text-muted text-sm"
+                  style={{
+                    padding: '1rem',
+                    textAlign: 'center'
+                  }}
+                >
+                  Loading catering enquiries...
+                </div>
+              ) : cateringRequests.length === 0 ? (
+                <div
+                  className="text-muted text-sm"
+                  style={{
+                    padding: '1rem',
+                    textAlign: 'center'
+                  }}
+                >
+                  No catering enquiries yet.
+                </div>
+              ) : (
+                <div
+                  className="catering-owner-list"
+                  style={{
+                    display: 'grid',
+                    gap: '1rem',
+                    marginTop: '1rem'
+                  }}
+                >
+                  {cateringRequests.map((request) => (
+                    <div
+                      key={request._id}
+                      className="curry-toggle-row"
+                      style={{
+                        display: 'block',
+                        padding: '1rem',
+                        border: '1px solid var(--border-subtle)',
+                        borderRadius: '14px'
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          gap: '0.8rem',
+                          alignItems: 'flex-start',
+                          flexWrap: 'wrap'
+                        }}
+                      >
+                        <div style={{ flex: 1, minWidth: '220px' }}>
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.5rem',
+                              flexWrap: 'wrap'
+                            }}
+                          >
+                            <strong className="curry-name">
+                              {request.customerName}
+                            </strong>
+
+                            <span className="badge-catering">
+                              {request.eventType}
+                            </span>
+                          </div>
+
+                          <div
+                            className="text-muted text-xs"
+                            style={{
+                              marginTop: '0.35rem',
+                              lineHeight: 1.7
+                            }}
+                          >
+                            <div>
+                              <Phone
+                                size={12}
+                                style={{
+                                  display: 'inline',
+                                  marginRight: '0.3rem'
+                                }}
+                              />
+                              {request.customerPhone}
+                            </div>
+
+                            {request.email && (
+                              <div>
+                                <Mail
+                                  size={12}
+                                  style={{
+                                    display: 'inline',
+                                    marginRight: '0.3rem'
+                                  }}
+                                />
+                                {request.email}
+                              </div>
+                            )}
+
+                            <div>
+                              <CalendarDays
+                                size={12}
+                                style={{
+                                  display: 'inline',
+                                  marginRight: '0.3rem'
+                                }}
+                              />
+                              {formatCateringDate(request.eventDate)}
+                              {' • '}
+                              {request.eventTime}
+                            </div>
+
+                            <div>
+                              <Users
+                                size={12}
+                                style={{
+                                  display: 'inline',
+                                  marginRight: '0.3rem'
+                                }}
+                              />
+                              {request.guestCount} guests
+                            </div>
+
+                            <div>
+                              <MapPin
+                                size={12}
+                                style={{
+                                  display: 'inline',
+                                  marginRight: '0.3rem'
+                                }}
+                              />
+                              {request.venue}
+                            </div>
+                          </div>
+                        </div>
+
+                        <select
+                          value={request.status || 'New'}
+                          onChange={(e) =>
+                            handleCateringStatusChange(
+                              request._id,
+                              e.target.value
+                            )
+                          }
+                          disabled={updatingCateringId === request._id}
+                          className="form-input"
+                          style={{
+                            width: 'auto',
+                            minWidth: '155px'
+                          }}
+                        >
+                          <option value="New">New</option>
+                          <option value="Contacted">Contacted</option>
+                          <option value="Quotation Sent">
+                            Quotation Sent
+                          </option>
+                          <option value="Confirmed">Confirmed</option>
+                          <option value="Completed">Completed</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                      </div>
+
+                      <div
+                        style={{
+                          marginTop: '0.9rem',
+                          paddingTop: '0.9rem',
+                          borderTop: '1px solid var(--border-subtle)'
+                        }}
+                      >
+                        <div
+                          className="text-muted text-xs"
+                          style={{ lineHeight: 1.6 }}
+                        >
+                          <strong>Food Requirements:</strong>{' '}
+                          {request.foodRequirements || '—'}
+                        </div>
+
+                        {request.specialRequirements && (
+                          <div
+                            className="text-muted text-xs"
+                            style={{
+                              marginTop: '0.45rem',
+                              lineHeight: 1.6
+                            }}
+                          >
+                            <strong>Special Requirements:</strong>{' '}
+                            {request.specialRequirements}
+                          </div>
+                        )}
+
+                        <div
+                          style={{
+                            display: 'flex',
+                            gap: '0.5rem',
+                            flexWrap: 'wrap',
+                            marginTop: '0.8rem'
+                          }}
+                        >
+                          <a
+                            href={`tel:${String(
+                              request.customerPhone || ''
+                            ).replace(/\s+/g, '')}`}
+                            className="btn-secondary-outline"
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.35rem',
+                              textDecoration: 'none'
+                            }}
+                          >
+                            <Phone size={14} />
+                            Call
+                          </a>
+
+                          <a
+                            href={buildCustomerWhatsAppUrl(
+                              request.customerPhone,
+                              request
+                            )}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="btn-whatsapp-chat"
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '0.35rem',
+                              textDecoration: 'none'
+                            }}
+                          >
+                            <MessageCircle size={14} />
+                            WhatsApp
+                          </a>
+                        </div>
+
+                        <div
+                          className="text-muted text-xs"
+                          style={{
+                            marginTop: '0.6rem',
+                            opacity: 0.75
+                          }}
+                        >
+                          Submitted:{' '}
+                          {formatCateringDate(request.createdAt)}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

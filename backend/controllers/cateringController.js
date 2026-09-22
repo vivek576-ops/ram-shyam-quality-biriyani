@@ -3,7 +3,6 @@ const CateringRequest = require('../models/CateringRequest');
 // @desc    Create catering enquiry
 // @route   POST /api/catering
 // @access  Public
-
 const createCateringRequest = async (req, res, next) => {
   try {
     const {
@@ -27,10 +26,7 @@ const createCateringRequest = async (req, res, next) => {
 
     const phoneRegex = /^[0-9+\s-]{10,15}$/;
 
-    if (
-      !customerPhone ||
-      !phoneRegex.test(customerPhone.trim())
-    ) {
+    if (!customerPhone || !phoneRegex.test(customerPhone.trim())) {
       errors.customerPhone = 'Valid phone number is required';
     }
 
@@ -82,7 +78,8 @@ const createCateringRequest = async (req, res, next) => {
         : ''
     });
 
-    // WhatsApp notification for restaurant owner
+    // Creates a WhatsApp draft link for the customer.
+    // It does NOT automatically send a WhatsApp message.
     const ownerWhatsApp =
       process.env.WHATSAPP_NUMBER || '';
 
@@ -137,6 +134,82 @@ const createCateringRequest = async (req, res, next) => {
   }
 };
 
+
+// @desc    Get all catering enquiries
+// @route   GET /api/catering
+// @access  Owner only
+const getCateringRequests = async (req, res, next) => {
+  try {
+    const requests = await CateringRequest.find()
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      count: requests.length,
+      data: requests
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+// @desc    Update catering enquiry status
+// @route   PATCH /api/catering/:id/status
+// @access  Owner only
+const updateCateringRequestStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const allowedStatuses = [
+      'New',
+      'Contacted',
+      'Quotation Sent',
+      'Confirmed',
+      'Completed',
+      'Cancelled'
+    ];
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid catering enquiry status.'
+      });
+    }
+
+    const request =
+      await CateringRequest.findByIdAndUpdate(
+        id,
+        { status },
+        {
+          new: true,
+          runValidators: true
+        }
+      );
+
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: 'Catering enquiry not found.'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message:
+        'Catering enquiry status updated successfully.',
+      data: request
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 module.exports = {
-  createCateringRequest
+  createCateringRequest,
+  getCateringRequests,
+  updateCateringRequestStatus
 };

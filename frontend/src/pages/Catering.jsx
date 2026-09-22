@@ -1,24 +1,26 @@
 import React, { useState } from 'react';
 import { APP_CONFIG } from '../config';
 
-const Catering = () => {
-  const [formData, setFormData] = useState({
-    customerName: '',
-    customerPhone: '',
-    email: '',
-    eventType: '',
-    eventDate: '',
-    eventTime: '',
-    guestCount: '',
-    venue: '',
-    foodRequirements: '',
-    specialRequirements: ''
-  });
+const initialFormData = {
+  customerName: '',
+  customerPhone: '',
+  email: '',
+  eventType: '',
+  eventDate: '',
+  eventTime: '',
+  guestCount: '',
+  venue: '',
+  foodRequirements: '',
+  specialRequirements: ''
+};
 
+const Catering = () => {
+  const [formData, setFormData] = useState(initialFormData);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
   const [whatsappUrl, setWhatsappUrl] = useState('');
+  const [requestId, setRequestId] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,6 +37,8 @@ const Catering = () => {
     setLoading(true);
     setSuccess('');
     setError('');
+    setWhatsappUrl('');
+    setRequestId('');
 
     try {
       const response = await fetch(
@@ -58,22 +62,12 @@ const Catering = () => {
 
       setSuccess(
         '🎉 Catering enquiry submitted successfully!'
-        );
+      );
 
-        setWhatsappUrl(result.data?.whatsappUrl || '');
+      setWhatsappUrl(result.data?.whatsappUrl || '');
+      setRequestId(result.data?.requestId || '');
 
-      setFormData({
-        customerName: '',
-        customerPhone: '',
-        email: '',
-        eventType: '',
-        eventDate: '',
-        eventTime: '',
-        guestCount: '',
-        venue: '',
-        foodRequirements: '',
-        specialRequirements: ''
-      });
+      setFormData(initialFormData);
     } catch (err) {
       console.error('Catering submission error:', err);
 
@@ -121,27 +115,43 @@ const Catering = () => {
             </p>
           </div>
 
-         {success && (
+          {success && (
             <div className="catering-success">
-            <div>{success}</div>
+              <div>{success}</div>
 
-            <p>
-                Your enquiry has been recorded successfully.
-                Please send the enquiry to our WhatsApp so our team can contact you.
-            </p>
+              <p>
+                Your enquiry has been saved successfully.
+                Our team can now view it in the Owner Portal
+                and contact you regarding your event.
+              </p>
 
-            {whatsappUrl && (
+              {requestId && (
+                <p>
+                  <strong>Enquiry ID:</strong>{' '}
+                  {requestId}
+                </p>
+              )}
+
+              {whatsappUrl && (
                 <a
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-whatsapp-chat catering-whatsapp-btn"
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-whatsapp-chat catering-whatsapp-btn"
                 >
-                💬 Send Enquiry to WhatsApp
+                  💬 Send Enquiry to WhatsApp
                 </a>
-            )}
+              )}
+
+              {whatsappUrl && (
+                <small className="text-muted d-block mt-2">
+                  WhatsApp is optional. Your enquiry has already
+                  been saved successfully.
+                </small>
+              )}
             </div>
-        )}
+          )}
+
           {error && (
             <div className="catering-error">
               {error}
