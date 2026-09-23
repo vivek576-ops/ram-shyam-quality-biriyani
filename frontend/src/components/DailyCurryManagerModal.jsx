@@ -1,5 +1,21 @@
 import React, { useState } from 'react';
-import { X, Lock, Plus, Check, Sparkles, RefreshCw, Eye, EyeOff, Phone, MessageCircle, CalendarDays, Users, MapPin, Mail } from 'lucide-react';
+import {
+  X,
+  Lock,
+  Plus,
+  Check,
+  Sparkles,
+  RefreshCw,
+  Eye,
+  EyeOff,
+  Phone,
+  MessageCircle,
+  CalendarDays,
+  Users,
+  MapPin,
+  Mail,
+  Trash2
+} from 'lucide-react';
 import { APP_CONFIG } from '../config';
 import { CURRY_PRESET_IMAGES } from '../utils/imageHelper';
 
@@ -28,6 +44,7 @@ const DailyCurryManagerModal = ({ isOpen, onClose, dailyCurries, onCurriesUpdate
   const [cateringLoading, setCateringLoading] = useState(false);
   const [cateringError, setCateringError] = useState('');
   const [updatingCateringId, setUpdatingCateringId] = useState('');
+  const [deletingCateringId, setDeletingCateringId] = useState('');
 
   if (!isOpen) return null;
 
@@ -114,6 +131,54 @@ const DailyCurryManagerModal = ({ isOpen, onClose, dailyCurries, onCurriesUpdate
       setUpdatingCateringId('');
     }
   };
+
+    const handleDeleteCateringRequest = async (request) => {
+  const confirmed = window.confirm(
+    `Delete catering enquiry from ${request.customerName}?\n\nThis cannot be undone.`
+  );
+
+  if (!confirmed) return;
+
+  setDeletingCateringId(request._id);
+  setCateringError('');
+
+  try {
+    const res = await fetch(
+      `${APP_CONFIG.apiBaseUrl}/api/catering/${request._id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'x-admin-pin': pin
+        }
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok || !data.success) {
+      setCateringError(
+        data.message || 'Unable to delete catering enquiry.'
+      );
+      return;
+    }
+
+    setCateringRequests((prev) =>
+      prev.filter((item) => item._id !== request._id)
+    );
+
+    setStatusMessage(
+      data.message || 'Catering enquiry deleted successfully.'
+    );
+  } catch (error) {
+    console.error('Catering delete error:', error);
+
+    setCateringError(
+      'Unable to delete catering enquiry. Please check your server connection.'
+    );
+  } finally {
+    setDeletingCateringId('');
+  }
+};
 
   const formatCateringDate = (dateValue) => {
     if (!dateValue) return '—';
@@ -981,6 +1046,27 @@ const DailyCurryManagerModal = ({ isOpen, onClose, dailyCurries, onCurriesUpdate
                             <MessageCircle size={14} />
                             WhatsApp
                           </a>
+                          {['Completed', 'Cancelled'].includes(request.status) && (
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteCateringRequest(request)}
+                                disabled={deletingCateringId === request._id}
+                                className="btn-secondary-outline"
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.35rem',
+                                textDecoration: 'none',
+                                borderColor: '#8b3a3a',
+                                color: '#ff8f8f'
+                        }}
+                        >
+                          <Trash2 size={14} />
+                          {deletingCateringId === request._id
+                            ? 'Deleting...'
+                            : 'Delete'}
+                            </button>
+                    )}
                         </div>
 
                         <div

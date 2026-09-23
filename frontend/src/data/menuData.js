@@ -77,7 +77,7 @@ export const MENU_ITEMS = [
     id: 'veg-biryani',
     name: 'Veg Biryani',
     category: 'Veg',
-    price: 60,
+    price: 70,
     description: 'Fragrant long-grain basmati rice cooked with fresh seasonal garden vegetables, whole spices, mint, and pure ghee.',
     detailedDescription: 'Aromatic vegetarian delight: Premium basmati rice slow-cooked dum style with tender carrots, beans, green peas, caramelized onions, fresh herbs, and mild aromatic spices. Served with raita and gravy.',
     image: '/images/veg_biryani.jpg',

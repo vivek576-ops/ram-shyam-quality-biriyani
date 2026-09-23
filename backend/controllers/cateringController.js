@@ -207,9 +207,34 @@ const updateCateringRequestStatus = async (req, res, next) => {
   }
 };
 
+// @desc    Delete catering enquiry
+// @route   DELETE /api/catering/:id
+// @access  Owner only
+const deleteCateringRequest = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const request = await CateringRequest.findByIdAndDelete(id);
+
+    if (!request) {
+      return res.status(404).json({
+        success: false,
+        message: 'Catering enquiry not found.'
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Catering enquiry deleted successfully.'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   createCateringRequest,
   getCateringRequests,
-  updateCateringRequestStatus
+  updateCateringRequestStatus,
+  deleteCateringRequest
 };

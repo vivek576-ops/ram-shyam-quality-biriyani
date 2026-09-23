@@ -66,7 +66,7 @@ const Home = () => {
             </p>
 
             <p className="hero-desc animate-slide-up delay-2">
-              Serving our famous <strong>Chicken Fry Piece Biryani</strong> (Single ₹120, Full ₹200, Family Pack ₹350), traditional <strong>Veg Meals (₹60) & Veg Biryani (₹60)</strong>, and fresh <strong>Curries (Sambar ₹20, Dal ₹20 & Daily Veg Curries)</strong>. Pre-book your hot parcel online and collect fresh at our hotel!
+              Serving our famous <strong>Chicken Fry Piece Biryani</strong> (Single ₹120, Full ₹200, Family Pack ₹350), traditional <strong>Veg Meals (₹60) & Veg Biryani (₹70)</strong>, and fresh <strong>Curries (Sambar ₹20, Dal ₹20 & Daily Veg Curries)</strong>. Pre-book your hot parcel online and collect fresh at our hotel!
             </p>
 
             {/* CTAs */}
@@ -95,7 +95,7 @@ const Home = () => {
               </div>
               <div className="stat-divider"></div>
               <div className="stat-item">
-                <span className="stat-number">₹60</span>
+                <span className="stat-number">₹60 / ₹70</span>
                 <span className="stat-label">Veg Meals & Veg Biryani</span>
               </div>
               <div className="stat-divider"></div>

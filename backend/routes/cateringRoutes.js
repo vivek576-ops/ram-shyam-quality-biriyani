@@ -5,7 +5,8 @@ const router = express.Router();
 const {
   createCateringRequest,
   getCateringRequests,
-  updateCateringRequestStatus
+  updateCateringRequestStatus,
+  deleteCateringRequest
 } = require('../controllers/cateringController');
 
 const verifyAdminPin = require('../middleware/adminAuth');
@@ -22,6 +23,13 @@ router.patch(
   '/:id/status',
   verifyAdminPin,
   updateCateringRequestStatus
+);
+
+// Owner-only: delete completed/cancelled enquiry
+router.delete(
+  '/:id',
+  verifyAdminPin,
+  deleteCateringRequest
 );
 
 module.exports = router;
